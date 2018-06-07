@@ -64,21 +64,22 @@ class Messages {
 // a new instance of our class
 app.use('messages', new Messages());
 
+const setTimestamp = name => {
+  return async context => {
+    context.data[name] = new Date();
+
+    return context;
+  }
+}
+
 // Lets add some middleware
 app.service('messages').hooks({
   before: {
-    create: async context => {
-      context.data.createdAt = new Date();
-      context.data.updatedAt = new Date();
-
-      return context;
-    },
-    patch: async context => {
-      context.data.updatedAt = new Date();
-    }
+    create: setTimestamp('createdAt'),
+    patch: setTimestamp('patchedAt'),
+    update: setTimestamp('updatedAt')
   }
-})
-
+});
 
 async function processMessages() {
   await app.service('messages').create({
