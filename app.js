@@ -64,6 +64,22 @@ class Messages {
 // a new instance of our class
 app.use('messages', new Messages());
 
+// Lets add some middleware
+app.service('messages').hooks({
+  before: {
+    create: async context => {
+      context.data.createdAt = new Date();
+      context.data.updatedAt = new Date();
+
+      return context;
+    },
+    patch: async context => {
+      context.data.updatedAt = new Date();
+    }
+  }
+})
+
+
 async function processMessages() {
   await app.service('messages').create({
     text: 'First message'
