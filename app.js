@@ -88,8 +88,16 @@ async function processMessagesSubscribers() {
     console.log('Created a new message', message);
   });
 
+  app.service('messages').on('created', message => {
+    console.log('Lets send an email about this one', message);
+  });
+
   app.service('messages').on('removed', message => {
     console.log('Deleted message', message);
+  });
+
+  app.service('messages').on('patched', message => {
+    console.log('Patched message', message);
   });
 
   await app.service('messages').create({
