@@ -85,7 +85,18 @@ app.service('messages').hooks({
   before: {
     create: setTimestamp(['createdAt', 'patchedAt', 'updatedAt']),
     patch: setTimestamp('patchedAt'),
-    update: setTimestamp('updatedAt')
+    update: setTimestamp('updatedAt'),
+    find: [],
+    get: [],
+    all: []
+  },
+  after: {
+    all: [],
+    find: [],
+    create: [],
+    update: [],
+    patch: [],
+    remove: [],
   }
 });
 
