@@ -1,4 +1,5 @@
 const feathers = require('@feathersjs/feathers');
+const errors = require('@feathersjs/errors');
 const app = feathers();
 
 class Messages {
@@ -29,7 +30,7 @@ class Messages {
     // Create a new object with the original data and an id
     // taken from the incrementing `currentId` counter
     const message = Object.assign({
-      id: ++this.currentId
+      id: ++this.currentId,
     }, data);
 
     this.messages.push(message);
@@ -80,10 +81,34 @@ const setTimestamp = names => {
   }
 }
 
-// Lets add some middleware
-app.service('messages').hooks({
+const validate = async context => {
+  const { data } = context;
+
+  // Check if there is `text` property
+  if(data.text === null || data.text === undefined) {
+    throw new errors.BadRequest('Message text must exist');
+  }
+
+  // Check if it is a string and not just whitespace
+  if(typeof data.text !== 'string' || data.text.trim() === '') {
+    throw new errors.BadRequest('Message text is invalid');
+  }
+
+  // Change the data to be only the text
+  // This prevents people from adding other properties to our database
+  context.data = {
+    text: data.text.toString()
+  }
+
+  return context;
+};
+
+const messageHooks = {
   before: {
-    create: setTimestamp(['createdAt', 'patchedAt', 'updatedAt']),
+    create: [
+      validate,
+      setTimestamp(['createdAt', 'patchedAt', 'updatedAt'])
+    ],
     patch: setTimestamp('patchedAt'),
     update: setTimestamp('updatedAt'),
     find: [],
@@ -97,6 +122,16 @@ app.service('messages').hooks({
     update: [],
     patch: [],
     remove: [],
+  }
+}
+
+// Lets add some middleware
+app.service('messages').hooks(messageHooks);
+
+// This is our application layer middleware for all services
+app.hooks({
+  error: async context => {
+    console.error(`OH CRAP!!!!!!!!! Error in '${context.path}' service method '${context.method}'`, context.error.stack);
   }
 });
 
@@ -136,8 +171,18 @@ async function processMessagesSubscribers() {
     console.log('Patched message', message);
   });
 
+  try {
+    await app.service('messages').create({
+      text: ''
+    });
+  }
+  catch (e) {
+    console.log('What is wrong with you? Why are you trying to save an empty message?')
+    // Do nothing.
+  }
+
   await app.service('messages').create({
-    text: 'First message'
+    text: 'This is my first message'
   });
 
   await app.service('messages').patch(1, {
