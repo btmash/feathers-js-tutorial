@@ -15,6 +15,8 @@
     "@feathersjs/errors": "^3.3.0",
     "@feathersjs/express": "^1.2.3",
     "@feathersjs/feathers": "^3.1.5",
-    "http-server": "^0.11.1"
+    "feathers-sequelize": "^3.1.2",
+    "http-server": "^0.11.1",
+    "mysql": "^2.15.0"
   }
 }
