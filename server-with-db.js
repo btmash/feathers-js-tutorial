@@ -6,9 +6,9 @@ const errors = require('@feathersjs/errors');
 const Sequelize = require('sequelize');
 const dbservice = require('feathers-sequelize');
 
-const db = new Sequelize('feathers_basics', 'drupaluser', '', {
-  host: '127.0.0.1',
-  port: '33067',
+const db = new Sequelize('feathers', 'feathersuser', 'feathers_Passw0rd', {
+  host: '0.0.0.0',
+  port: '33066',
   dialect: 'mysql',
   pool: {
     max: 2,
