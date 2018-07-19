@@ -45,6 +45,13 @@ const Message = db.define('message', {
 // This creates an app that is both, an Express and Feathers app
 const app = express(feathers());
 
+// Enable CORS
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
 const setTimestamp = names => {
   return async context => {
     if (typeof names == 'string') {
@@ -161,7 +168,7 @@ Message.sync({ force: false }).then(() => {
     text: 'Message created on server',
     counter: 1
   }).then(message => console.log('Created message', message));
-  createAndFind();
+//  createAndFind();
 });
 
 async function createAndFind() {
